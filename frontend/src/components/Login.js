@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { loginUser } from '../actions/authentication';
+import { loginUser, logoutUser } from '../actions/authentication';
 import classnames from 'classnames';
 import bcrypt from 'bcryptjs'
 import {
@@ -51,13 +51,16 @@ class Login extends Component {
         modal: !this.state.modal
       });
     };
-    handleSubmitModal(code,path){
+    handleSubmitModal(code,path,user){
       bcrypt.compare(this.state.code ,code )
       .then( isMatch =>{
-        if(isMatch)
-          {this.props.history.push(path)}
+        if(isMatch){
+            localStorage.setItem('userrole', user.userrole);
+           localStorage.setItem('jwtToken', user.token);
+            this.props.history.push(path)
+          }
         else{
-          this.props.history.push('/login')
+          this.props.history.push('/login');
         }
       })
     }
@@ -82,10 +85,10 @@ class Login extends Component {
         if(nextProps.auth.isAuthenticated) {
           console.log(nextProps.auth.user.userrole);
           if ( nextProps.auth.user.userrole === "User" ){
-            this.handleSubmitModal(nextProps.auth.user.code , '/')
+            this.handleSubmitModal(nextProps.auth.user.code , '/',nextProps.auth.user)
           }
           else{
-            this.handleSubmitModal(nextProps.auth.user.code , 'admin')
+            this.handleSubmitModal(nextProps.auth.user.code , 'admin',nextProps.auth.user)
           }
         }
         if(nextProps.errors) {
@@ -181,6 +184,7 @@ class Login extends Component {
 
 Login.propTypes = {
     loginUser: PropTypes.func.isRequired,
+    logoutUser: PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired,
     errors: PropTypes.object.isRequired
 }
@@ -190,4 +194,4 @@ const mapStateToProps = (state) => ({
     errors: state.errors
 })
 
-export  default connect(mapStateToProps, { loginUser })(Login)
+export  default connect(mapStateToProps, { loginUser ,logoutUser })(Login)

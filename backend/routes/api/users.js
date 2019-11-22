@@ -5,11 +5,25 @@ const config = require('config');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 var randomize = require('randomatic');
+const auth = require('../../middleware/auth');
+
 // User Model
 const User = require('../../models/User');
 const Dinary = require('../../models/Dinary')
 
+router.post('/edit',auth,(req,res)=>{
+  const { name , email , password} = req.body;
+  console.log(req.body);
+  if(password.lenght!== 0 ){
+    User.findByIdAndUpdate(req.user.id, {name , email})
+    .then(result => res.json(result))
+  }
+  else {
+    User.findByIdAndUpdate(req.user.id, {name , email, password})
+    .then(result => res.json(result))
+  }
 
+})
 
 
 router.post('/signin', (req, res) => {
@@ -60,8 +74,9 @@ router.post('/signin', (req, res) => {
                 user: {
                   id: user.id,
                   role: user.role,
-                  code : codehash
-
+                  code : codehash,
+                  name : user.name,
+                  email : user.email
                 }
               });
             }
@@ -76,7 +91,9 @@ router.post('/signin', (req, res) => {
 // @desc    Register new user
 // @access  Public
 router.post('/register', (req, res) => {
-  const { name, email, password } = req.body;
+  let userR = req.body;
+  console.log(userR);
+  const { name, email, password  } = req.body;
   console.log(req);
   // Simple validation
   if(!name || !email || !password) {
@@ -88,11 +105,7 @@ router.post('/register', (req, res) => {
     .then(user => {
       if(user) return res.status(400).json({ msg: 'User already exists' });
 
-      const newUser = new User({
-        name,
-        email,
-        password
-      });
+      const newUser = new User(userR);
       const newDinary = new Dinary({
         author : name,
         action : 'Register'
@@ -103,7 +116,7 @@ router.post('/register', (req, res) => {
       // Create salt & hash
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
-          if(err) throw err;
+          if(err) {console.log( err);}
           newUser.password = hash;
           newUser.save()
             .then(user => {

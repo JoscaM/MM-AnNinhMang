@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_ERRORS, SET_CURRENT_USER } from './types';
+import { GET_ERRORS, SET_CURRENT_USER , USER_EDIT} from './types';
 import setAuthToken from '../setAuthToken';
 import jwt_decode from 'jwt-decode';
 
@@ -13,6 +13,17 @@ export const registerUser = (user, history) => dispatch => {
                 });
             });
 }
+export const editUser = (user, history,token) => dispatch => {
+    axios.post('/api/users/edit', user, tokenConfig(token))
+            .then(res => logoutUser(history))
+            .catch(err => {
+                dispatch({
+                    type: GET_ERRORS,
+                    payload: err.response.data
+
+                });
+            });
+}
 
 export const loginUser = (user) => dispatch => {
     axios.post('/api/users/signin', user)
@@ -21,10 +32,10 @@ export const loginUser = (user) => dispatch => {
                 let userrole = res.data.user.role;
                 setAuthToken(token);
                 let code = res.data.user.code;
-                console.log(code);
+                const name = res.data.user.name
+                  const email = res.data.user.email;
                 const decoded =  jwt_decode(token) ;
-                let data = {decoded , userrole , code}
-                localStorage.setItem('jwtToken', token);
+                let data = {decoded , userrole , code, name, token, email}
                 console.log(data);
                 dispatch(setCurrentUser(data));
             })
