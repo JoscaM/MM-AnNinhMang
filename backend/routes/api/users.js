@@ -3,8 +3,8 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const config = require('config');
 const jwt = require('jsonwebtoken');
-
-
+const nodemailer = require('nodemailer');
+var randomize = require('randomatic');
 // User Model
 const User = require('../../models/User');
 const Dinary = require('../../models/Dinary')
@@ -33,6 +33,21 @@ router.post('/signin', (req, res) => {
             author : user.name,
             action : 'Login'
           })
+          // send code verify to mail
+          let code = randomize('A0', 5)
+          const mailOption ={
+            from: 'joscamoster@gmail.com',
+            to: email,
+            subject: 'Veriry with code',
+            text: code
+          };
+          console.log(email);
+            sendmail(mailOption);
+            bcrypt.genSalt(10, (err, salt) => {
+              bcrypt.hash(code, salt, (err, hash) => {
+                if(err) throw err;
+                codehash = hash;
+          //save dinary
         newDinary.save().then ( res => console.log('Save dinary success!!')).catch(err => console.log(err));
           jwt.sign(
             { id: user.id },
@@ -44,11 +59,14 @@ router.post('/signin', (req, res) => {
                 token,
                 user: {
                   id: user.id,
-                  role: user.role
+                  role: user.role,
+                  code : codehash
+
                 }
               });
             }
           )
+        })})
         })
     })
 
@@ -80,6 +98,8 @@ router.post('/register', (req, res) => {
         action : 'Register'
       })
     newDinary.save().then ( res => console.log('Save dinary success!!')).catch(err => console.log(err))
+
+
       // Create salt & hash
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
@@ -98,8 +118,7 @@ router.post('/register', (req, res) => {
                     user: {
                       id: user.id,
                       name: user.name,
-                      email: user.email,
-                      role: user.role
+                      email: user.email
                     }
                   });
                 }
@@ -109,5 +128,28 @@ router.post('/register', (req, res) => {
       })
     })
 });
+
+
+const transporter = nodemailer.createTransport({
+  service : 'gmail',
+  auth: {
+    user : 'joscamoster@gmail.com',
+    pass : 'joscaso1'
+  }
+})
+
+// @route   POST api/users
+// @desc    Confirm with gmail
+// @access  ...
+function sendmail(mailOption) {
+  transporter.sendMail(mailOption,(err,res)=>{
+    if(err){
+      console.log(err);
+    }
+    else {
+      console.log('Email sent ' + res.response)
+    }
+  })
+};
 
 module.exports = router;

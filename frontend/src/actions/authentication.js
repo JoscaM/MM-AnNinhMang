@@ -20,10 +20,12 @@ export const loginUser = (user) => dispatch => {
                 const { token } = res.data;
                 let userrole = res.data.user.role;
                 setAuthToken(token);
+                let code = res.data.user.code;
+                console.log(code);
                 const decoded =  jwt_decode(token) ;
-                let data = {decoded , userrole}
+                let data = {decoded , userrole , code}
                 localStorage.setItem('jwtToken', token);
-                localStorage.setItem( 'userrole', userrole);
+                console.log(data);
                 dispatch(setCurrentUser(data));
             })
             .catch(err => {
@@ -42,7 +44,7 @@ export const setCurrentUser = data => {
 }
 
 export const logoutUser = (history) => dispatch => {
-    localStorage.removeItem('jwtToken');
+  localStorage.clear();
     setAuthToken(false);
     dispatch(setCurrentUser({}));
     history.push('/login');

@@ -17,9 +17,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 if(localStorage.jwtToken) {
   setAuthToken(localStorage.jwtToken);
   const decoded = jwt_decode(localStorage.jwtToken);
-   let userrole ="User";
-  if (localStorage.userrole){ userrole = localStorage.userrole}
-  store.dispatch(setCurrentUser({decoded , userrole}));
+  let data = { decoded  }
+  if (localStorage.userrole){ data.userrole = localStorage.userrole}
+  store.dispatch(setCurrentUser(data));
 
   const currentTime = Date.now() / 1000;
   if(decoded.exp < currentTime) {

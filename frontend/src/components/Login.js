@@ -3,14 +3,27 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { loginUser } from '../actions/authentication';
 import classnames from 'classnames';
+import bcrypt from 'bcryptjs'
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  Form,
+  FormGroup,
+  Label,
+  Input
+} from 'reactstrap';
 
 class Login extends Component {
 
     constructor() {
         super();
         this.state = {
+          modal : false,
             email: '',
             password: '',
+            code : '',
             errors: {}
         }
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -23,23 +36,44 @@ class Login extends Component {
         })
     }
 
-    handleSubmit(e) {
+     handleSubmit(e) {
         e.preventDefault();
         const user = {
             email: this.state.email,
             password: this.state.password,
         }
-        this.props.loginUser(user);
-    }
+         this.props.loginUser(user);
+         this.toggle();
+    };
 
+    toggle = () => {
+      this.setState({
+        modal: !this.state.modal
+      });
+    };
+    handleSubmitModal(code,path){
+      bcrypt.compare(this.state.code ,code )
+      .then( isMatch =>{
+        if(isMatch)
+          {this.props.history.push(path)}
+        else{
+          this.props.history.push('/login')
+        }
+      })
+    }
     componentDidMount() {
         if(this.props.auth.isAuthenticated) {
             console.log(this.props.auth);
             if (this.props.auth.user.userrole ==='User'){
               this.props.history.push('/');
+
+              // this.handleClick(this.props.auth.user.code , '/')
+
             }
             else{
               this.props.history.push('/admin');
+              // this.handleClick(this.props.auth.user.code , 'admin')
+
             }
         }
     }
@@ -48,10 +82,10 @@ class Login extends Component {
         if(nextProps.auth.isAuthenticated) {
           console.log(nextProps.auth.user.userrole);
           if ( nextProps.auth.user.userrole === "User" ){
-            this.props.history.push('/');
+            this.handleSubmitModal(nextProps.auth.user.code , '/')
           }
           else{
-            this.props.history.push('/admin');
+            this.handleSubmitModal(nextProps.auth.user.code , 'admin')
           }
         }
         if(nextProps.errors) {
@@ -99,6 +133,47 @@ class Login extends Component {
                     </button>
                 </div>
             </form>
+
+            <Modal isOpen={this.state.modal} toggle={this.toggle}>
+              <ModalHeader toggle={this.toggle}>Verify code from your email</ModalHeader>
+              <ModalBody>
+                <Form onSubmit={this.handleSubmitModal}>
+                  <FormGroup>
+                    <Label for='item'>Code</Label>
+                    <Input
+                      type='text'
+                      name='code'
+                      id='code'
+                      placeholder='Input code here'
+                      onChange={this.handleInputChange}
+                    />
+                    <Button color='dark' style={{ marginTop: '2rem' }} block>
+                      Verify
+                    </Button>
+                  </FormGroup>
+                </Form>
+              </ModalBody>
+            </Modal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         </div>
         )
     }

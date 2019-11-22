@@ -7,11 +7,13 @@ class Admin extends Component {
 
       componentDidMount() {
           if(this.props.auth.isAuthenticated) {
-              console.log(this.props.auth);
               if (this.props.auth.user.userrole ==='User'){
                   alert('You cant access this page!!')
                 this.props.history.push('/');
               }
+          }
+          else {
+            this.props.history.push('/');
           }
       }
 
@@ -22,6 +24,9 @@ class Admin extends Component {
               alert('You cant access this page!!')
               this.props.history.push('/');
             }
+          }
+          else {
+            this.props.history.push('/');
           }
           if(nextProps.errors) {
               this.setState({
