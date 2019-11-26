@@ -18,7 +18,11 @@ router.get('/getUser', auth,(req, res) => {
     .then(users=>
       res.json(users))
 });
-
+router.get('/getOneUser', auth,(req, res) => {
+    User.findById(req.user.id).select('-password')
+    .then(users=>
+      res.json(users))
+});
 
 router.delete('/:id', auth, (req, res) => {
   console.log(req.params.id);

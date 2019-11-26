@@ -35,7 +35,10 @@ class Manage extends Component {
                       <th >{name}</th>
                       <td>{email}</td>
                       <td>{register_date}</td>
-                      <td><button onClick={this.handleClick.bind(this, _id)} type="button" class="btn btn-danger">Delete</button></td>
+                      <td>
+                        <button onClick={this.handleClick.bind(this, _id)} type="button" class="btn btn-danger">Delete</button>
+                        <button  type="button" class="btn btn-success">Active</button>
+                      </td>
 
                     </tr>
                   ))

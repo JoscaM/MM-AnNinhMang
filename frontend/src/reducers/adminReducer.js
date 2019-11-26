@@ -1,4 +1,4 @@
-import { GET_DINARY , GET_USERS, DELETE_USER} from '../actions/types';
+import { GET_DINARY , GET_USERS, DELETE_USER , GET_USER} from '../actions/types';
 import isEmpty from '../validation/is-empty';
 
 
@@ -28,6 +28,12 @@ export default function(state = initialState, action ){
                   ...state,
                   users: state.users.filter(user => user._id !== action.payload)
                 };
+    case GET_USER :
+              return {
+                  ...state,
+                  isAuthenticated: !isEmpty(action.payload),
+                  users: action.payload
+                          }
     default:
         return state;
 

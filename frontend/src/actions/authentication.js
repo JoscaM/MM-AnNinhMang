@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_ERRORS, SET_CURRENT_USER , USER_EDIT} from './types';
+import { GET_ERRORS, SET_CURRENT_USER } from './types';
 import setAuthToken from '../setAuthToken';
 import jwt_decode from 'jwt-decode';
 
@@ -13,9 +13,9 @@ export const registerUser = (user, history) => dispatch => {
                 });
             });
 }
-export const editUser = (user, history,token) => dispatch => {
-    axios.post('/api/users/edit', user, tokenConfig(token))
-            .then(res => logoutUser(history))
+export const editUser = (user, token,history) => dispatch => {
+    axios.post('/api/users/edit',user,tokenConfig(token))
+            .then(res => dispatch(logoutUser(history)))
             .catch(err => {
                 dispatch({
                     type: GET_ERRORS,

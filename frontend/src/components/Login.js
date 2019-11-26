@@ -57,6 +57,7 @@ class Login extends Component {
         if(isMatch){
             localStorage.setItem('userrole', user.userrole);
            localStorage.setItem('jwtToken', user.token);
+           localStorage.setItem('name', user.name);
             this.props.history.push(path)
           }
         else{

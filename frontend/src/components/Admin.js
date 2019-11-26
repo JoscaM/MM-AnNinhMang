@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Dinary from './Dinary';
-import Manage from './manage';
+// import Manage from './manage';
+import Manage from './newmanage'
 import {Tabs, Tab} from 'react-bootstrap-tabs';
 
 class Admin extends Component {

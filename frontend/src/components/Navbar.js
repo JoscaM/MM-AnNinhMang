@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { logoutUser, editUser } from '../actions/authentication';
+import { getUser } from '../actions/dinaryAction'
 import { withRouter } from 'react-router-dom';
 import {
   Button,
@@ -14,6 +15,7 @@ import {
   Label,
   Input
 } from 'reactstrap';
+
 class Navbar extends Component {
   constructor() {
       super();
@@ -37,11 +39,14 @@ class Navbar extends Component {
         })
     }
     componentDidMount() {
-        if(this.props.auth.user){
-          let user = this.props.auth.user;
-          this.setState({name :user.name , email : user.email})
-        }
+
+      let token = localStorage.getItem('jwtToken')
+        this.props.getUser(token)
+      
+
     }
+
+
 
     componentWillReceiveProps(nextProps) {
         if(nextProps.auth.user) {
@@ -72,10 +77,11 @@ class Navbar extends Component {
 
     render() {
         const {isAuthenticated, user} = this.props.auth;
+        let name = localStorage.getItem('name');
         const authLinks = (
             <ul className="navbar-nav ml-auto">
                 <a className='mt-2' onClick={this.onViewInfo.bind(this)}>
-                  <strong >{user ? `Welcome ${user.name}` : ''}</strong>
+                  <strong >{user ? `Welcome ${name}` : ''}</strong>
                 </a>
                 <a href="" className="nav-link" onClick={this.onLogout.bind(this)}>
                             Logout
@@ -105,7 +111,7 @@ class Navbar extends Component {
             <Modal isOpen={this.state.modal} toggle={this.toggle}>
               <ModalHeader toggle={this.toggle}>User Information</ModalHeader>
               <ModalBody>
-                <Form onSubmit={this.handleSubmitModal}>
+                <Form onSubmit={this.handleSubmit}>
                   <FormGroup>
                     <Label for='name'>Name</Label>
                     <Input
@@ -132,7 +138,7 @@ class Navbar extends Component {
                       onChange={this.handleInputChange}
                     />
                     <Button color='dark' style={{ marginTop: '2rem' }} block>
-                      Confirm
+                      Update
                     </Button>
                   </FormGroup>
                 </Form>
@@ -147,6 +153,7 @@ class Navbar extends Component {
 Navbar.propTypes = {
     logoutUser: PropTypes.func.isRequired,
     editUser: PropTypes.func.isRequired,
+    getUser: PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired
 }
 
@@ -154,4 +161,4 @@ const mapStateToProps = (state) => ({
     auth: state.auth
 })
 
-export default connect(mapStateToProps, { logoutUser, editUser })(withRouter(Navbar));
+export default connect(mapStateToProps, { logoutUser, editUser, getUser })(withRouter(Navbar));

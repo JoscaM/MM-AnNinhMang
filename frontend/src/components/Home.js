@@ -4,6 +4,14 @@ import PropTypes from 'prop-types';
 import AddItem from './AddIteam'
 import ShoppingList from './ShoppingList';
  class Home extends Component {
+    constructor(props){
+      super(props);
+    }
+    componentDidMount(){
+      if(!this.props.auth){
+        this.props.history.push('/')
+      }
+    }
     render() {
         return (
             <div>

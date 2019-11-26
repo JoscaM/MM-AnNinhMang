@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { GET_DINARY , GET_USERS, DELETE_USER} from './types';
+import {setCurrentUser} from './authentication'
 import {tokenConfig} from './authentication';
 import { returnErrors } from './errorActions';
 
-import jwt_decode from 'jwt-decode';
 
 export const getDinary = (token) => dispatch => {
   axios
@@ -43,6 +43,16 @@ export const deleteUser = (id , token)  => (dispatch) => {
         type: DELETE_USER,
         payload: id
       })
+    )
+    .catch(err =>
+      dispatch(returnErrors(err.response.data, err.response.status))
+    );
+};
+export const getUser = (token) => dispatch => {
+  axios
+    .get('/api/dinaries/getOneUser',  tokenConfig(token))
+    .then(res =>{dispatch(setCurrentUser(res.data));
+}
     )
     .catch(err =>
       dispatch(returnErrors(err.response.data, err.response.status))
