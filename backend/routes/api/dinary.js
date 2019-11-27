@@ -27,9 +27,10 @@ router.get('/getOneUser', auth,(req, res) => {
       res.json(users))
 });
 
+
 router.delete('/:id', auth, (req, res) => {
   console.log(req.params.id);
-  User.findByIdandDelete(req.params.id)
+  User.findById(req.params.id)
     .then(item => item.remove().then(() => {
       User.findById( req.user.id).then( res=>{
       const newDinary = new Dinary({
@@ -94,7 +95,7 @@ newDinary.save().then ( res => console.log('Save dinary success!!')).catch(err =
         from: 'joscamoster@gmail.com',
         to: email,
         subject: 'Inform',
-        text: "Admin has modify your account!"
+        text: newUser
       };
       console.log(mailOption);
       sendmail(mailOption);

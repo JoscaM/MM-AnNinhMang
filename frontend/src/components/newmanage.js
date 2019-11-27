@@ -32,7 +32,7 @@ class Manage extends Component {
               new Promise(resolve =>{
                 setTimeout(() => {
                     resolve();
-                    this.props.admincreate(newData,token,this.props.history)
+                    this.props.adminCreate(newData,token,this.props.history)
                   }, 600)
                 }),
            onRowUpdate: (newData,oldData) =>
@@ -47,7 +47,7 @@ class Manage extends Component {
               new Promise(resolve =>{
                 setTimeout(() => {
                     resolve();
-                    console.log(oldData);
+                    console.log(oldData._id);
                     this.props.deleteUser(oldData._id,token)
                   }, 600);
                  }),
