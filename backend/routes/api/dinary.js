@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../../middleware/auth');
-
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+var randomize = require('randomatic');
 // Item Model
 const Dinary = require('../../models/Dinary')
 const User = require('../../models/User');
@@ -38,5 +41,127 @@ router.delete('/:id', auth, (req, res) => {
       res.json({ success: true })}))
     .catch(err => res.status(404).json({ success: false }));
 });
+
+router.post('/updateAccount',auth,(req,res)=>{
+  const user= req.body;
+  const newDinary = new Dinary({
+    author : 'admin',
+    action : 'Update'
+  })
+newDinary.save().then ( res => console.log('Save dinary success!!')).catch(err => console.log(err))
+
+    User.findByIdAndUpdate(user.oldId, user)
+    .then(result => {
+            const mailOption ={
+            from: 'joscamoster@gmail.com',
+            to: email,
+            subject: 'Veriry with code',
+            text: code
+          };
+          console.log(email);
+          sendmail(mailOption);
+      })
+    });
+
+
+    router.post('/createAccount', auth,(req, res) => {
+
+      const { name, email  } = req.body;
+
+      // Simple validation
+      if(!name || !email ) {
+        return res.status(400).json({ msg: 'Please enter all fields' });
+      }
+
+      // Check for existing use
+      User.findOne({ email })
+        .then(user => {
+          if(user) return res.status(400).json({ msg: 'User already exists' });
+              let password = randomize('A0', 5)
+          const newUser = new User({
+            name,
+            email,
+            password
+          });
+          const newDinary = new Dinary({
+            author : 'admin',
+            action : 'Register'
+          })
+        newDinary.save().then ( res => console.log('Save dinary success!!')).catch(err => console.log(err))
+
+
+          // Create salt & hash
+          bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(newUser.password, salt, (err, hash) => {
+              if(err) {console.log( err);}
+              newUser.password = hash;
+              newUser.save()
+                .then(user => {
+                  jwt.sign(
+                    { id: user.id },
+                    config.get('jwtSecret'),
+                    { expiresIn: 3600 },
+                    (err, token) => {
+                      if(err) throw err;
+                      res.json({
+                        token,
+                        user: {
+                          id: user.id,
+                          name: user.name,
+                          email: user.email
+                        }
+                      });
+                    }
+                  )
+                })
+            })
+          })
+        })
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const transporter = nodemailer.createTransport({
+  service : 'gmail',
+  auth: {
+    user : 'joscamoster@gmail.com',
+    pass : 'joscaso1'
+  }
+})
+
+// @route   POST api/users
+// @desc    Confirm with gmail
+// @access  ...
+function sendmail(mailOption) {
+  transporter.sendMail(mailOption,(err,res)=>{
+    if(err){
+      console.log(err);
+    }
+    else {
+      console.log('Email sent ' + res.response)
+    }
+  })
+};
+
 
 module.exports = router;

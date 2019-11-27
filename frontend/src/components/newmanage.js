@@ -1,7 +1,7 @@
 import React  , {Component} from 'react';
 import MaterialTable from 'material-table';
 import PropTypes from 'prop-types';
-import { getUserInfo , deleteUser } from '../actions/dinaryAction'
+import { getUserInfo , deleteUser , adminCreate , adminUpdate} from '../actions/dinaryAction'
 import { connect } from 'react-redux';
 class Manage extends Component {
    constructor(props){
@@ -32,25 +32,23 @@ class Manage extends Component {
               new Promise(resolve =>{
                 setTimeout(() => {
                     resolve();
-
-                    // {this.props.admincreate(newData,token) }
-
+                    this.props.admincreate(newData,token,this.props.history)
                   }, 600)
                 }),
            onRowUpdate: (newData,oldData) =>
               new Promise(resolve =>{
                 setTimeout(() => {
                     resolve();
-
-                    // {this.props.adminUpdate(newData,oldData.id,token) }
+                    newData.oldId= oldData._id
+                    {this.props.adminUpdate(newData,token, this.props.history) }
                   }, 600)
                 }),
            onRowDelete: oldData=>
               new Promise(resolve =>{
                 setTimeout(() => {
                     resolve();
-
-                    // {this.props.adminDelete(oldData.id,token) }
+                    console.log(oldData);
+                    {this.props.deleteUser(oldData._id,token) }
                   }, 600);
                  }),
          }}
@@ -64,7 +62,9 @@ class Manage extends Component {
      errors: PropTypes.object.isRequired,
      userList: PropTypes.array.isRequired,
      getUserInfo : PropTypes.func.isRequired,
-     deleteUser : PropTypes.func.isRequired
+     deleteUser : PropTypes.func.isRequired,
+      adminCreate : PropTypes.func.isRequired,
+       adminUpdate : PropTypes.func.isRequired
  }
 
  const mapStateToProps = (state) => ({
@@ -72,4 +72,4 @@ class Manage extends Component {
      auth: state.auth,
      errors: state.errors
  })
-export  default connect(mapStateToProps,  {getUserInfo , deleteUser} )(Manage)
+export  default connect(mapStateToProps,  {getUserInfo , deleteUser, adminUpdate, adminCreate} )(Manage)

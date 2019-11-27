@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_DINARY , GET_USERS, DELETE_USER} from './types';
+import { GET_DINARY , GET_USERS, DELETE_USER, GET_ERRORS} from './types';
 import {setCurrentUser} from './authentication'
 import {tokenConfig} from './authentication';
 import { returnErrors } from './errorActions';
@@ -58,3 +58,23 @@ export const getUser = (token) => dispatch => {
       dispatch(returnErrors(err.response.data, err.response.status))
     );
 };
+export const adminCreate = (user, token,history) => dispatch => {
+    axios.post('/api/dinaries/createAccount', user , tokenConfig(token))
+            .then(res => history.push('/admin'))
+            .catch(err => {
+                dispatch({
+                    type: GET_ERRORS,
+                    payload: err.response.data
+                });
+            });
+}
+export const adminUpdate = (user, token,history) => dispatch => {
+    axios.post('/api/dinaries/updateAccount', user , tokenConfig(token))
+            .then(res => history.push('/admin'))
+            .catch(err => {
+                dispatch({
+                    type: GET_ERRORS,
+                    payload: err.response.data
+                });
+            });
+}

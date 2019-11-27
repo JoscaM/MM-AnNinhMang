@@ -1,4 +1,5 @@
-import { GET_DINARY , GET_USERS, DELETE_USER , GET_USER} from '../actions/types';
+import { GET_DINARY , GET_USERS, DELETE_USER , GET_USER,
+  UPDATE_USER , CREATE_USER} from '../actions/types';
 import isEmpty from '../validation/is-empty';
 
 
@@ -34,6 +35,16 @@ export default function(state = initialState, action ){
                   isAuthenticated: !isEmpty(action.payload),
                   users: action.payload
                           }
+    case UPDATE_USER :
+        return {
+            ...state,
+            isAuthenticated: !isEmpty(action.payload)
+    }
+    case CREATE_USER  :
+        return {
+            ...state,
+            isAuthenticated: !isEmpty(action.payload)
+    }
     default:
         return state;
 
