@@ -29,7 +29,7 @@ router.get('/getOneUser', auth,(req, res) => {
 
 router.delete('/:id', auth, (req, res) => {
   console.log(req.params.id);
-  User.findById(req.params.id)
+  User.findByIdandDelete(req.params.id)
     .then(item => item.remove().then(() => {
       User.findById( req.user.id).then( res=>{
       const newDinary = new Dinary({
@@ -52,13 +52,14 @@ newDinary.save().then ( res => console.log('Save dinary success!!')).catch(err =
 
     User.findByIdAndUpdate(user.oldId, user)
     .then(result => {
+        // res.json(result);
             const mailOption ={
             from: 'joscamoster@gmail.com',
-            to: email,
-            subject: 'Veriry with code',
-            text: code
+            to: result.email,
+            subject: 'Inform',
+            text: "Admin has modify your account!"
           };
-          console.log(email);
+          console.log(mailOption);
           sendmail(mailOption);
       })
     });
@@ -89,7 +90,14 @@ newDinary.save().then ( res => console.log('Save dinary success!!')).catch(err =
           })
         newDinary.save().then ( res => console.log('Save dinary success!!')).catch(err => console.log(err))
 
-
+        const mailOption ={
+        from: 'joscamoster@gmail.com',
+        to: email,
+        subject: 'Inform',
+        text: "Admin has modify your account!"
+      };
+      console.log(mailOption);
+      sendmail(mailOption);
           // Create salt & hash
           bcrypt.genSalt(10, (err, salt) => {
             bcrypt.hash(newUser.password, salt, (err, hash) => {
@@ -103,14 +111,14 @@ newDinary.save().then ( res => console.log('Save dinary success!!')).catch(err =
                     { expiresIn: 3600 },
                     (err, token) => {
                       if(err) throw err;
-                      res.json({
-                        token,
-                        user: {
-                          id: user.id,
-                          name: user.name,
-                          email: user.email
-                        }
-                      });
+                      const mailOption ={
+                      from: 'joscamoster@gmail.com',
+                      to: email,
+                      subject: 'Inform',
+                      text: newUser
+                    };
+                    console.log(mailOption);
+                    sendmail(mailOption);
                     }
                   )
                 })

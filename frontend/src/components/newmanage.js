@@ -40,7 +40,7 @@ class Manage extends Component {
                 setTimeout(() => {
                     resolve();
                     newData.oldId= oldData._id
-                    {this.props.adminUpdate(newData,token, this.props.history) }
+                    this.props.adminUpdate(newData,token, this.props.history)
                   }, 600)
                 }),
            onRowDelete: oldData=>
@@ -48,7 +48,7 @@ class Manage extends Component {
                 setTimeout(() => {
                     resolve();
                     console.log(oldData);
-                    {this.props.deleteUser(oldData._id,token) }
+                    this.props.deleteUser(oldData._id,token)
                   }, 600);
                  }),
          }}
